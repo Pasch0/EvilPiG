@@ -1,0 +1,12 @@
+[Unit]
+Description=Serviço de Interface Web do EvilPig
+After=network.target
+
+[Service]
+User=root 
+ExecStart=/bin/bash /opt/evilpig/evilpig.sh &
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

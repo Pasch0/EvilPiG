@@ -1,0 +1,1 @@
+cd /opt/evilpig && sudo python3 -m streamlit run app.py --server.port 80

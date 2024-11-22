@@ -1,0 +1,6 @@
+REM open a text field on the android device to test if it is working
+DELAY 1000
+STRING robot was here
+DELAY 1000
+Enter
+DELAY 1000

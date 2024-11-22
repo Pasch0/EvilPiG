@@ -1,0 +1,12 @@
+[Unit]
+Description=Serviço de Scan Wirelles do Aplicativo EvilPig
+After=network.target
+
+[Service]
+User=root
+ExecStart=/bin/bash /opt/evilpig/evilpig-wifi.sh &
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
