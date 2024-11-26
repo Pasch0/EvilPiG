@@ -10,14 +10,16 @@ cd EvilPiG
 
 # Update the package list and install necessary packages
 apt update -y
-apt install -y \
-    curl gcc git linux-firmware m4 autoconf htop python3-pip libcurl4 \
+
+apt install linux-firmware -y
+
+apt install -y curl gcc git m4 autoconf htop python3-pip \
     python3-setuptools python3-bluez python3-pydbus python3-psutil \
     psutils python3-dbus reaver tshark hashcat hcxdumptool macchanger \
     tmux speedtest-cli autoconf automake libtool pkg-config m4 \
     autoconf-archive libcurl4-openssl-dev libpcap-dev libssl-dev \
     build-essential sqlite3 libsqlite3-dev pixiewps python3-scapy \
-    python3.12-venv neofetch libncurses5-dev libgdbm-dev libbz2-dev \
+    neofetch libncurses5-dev libgdbm-dev libbz2-dev \
     libblas-dev libatlas-base-dev libpq-dev libffi-dev zlib1g-dev \
     libxml2-dev libxslt1-dev
 
