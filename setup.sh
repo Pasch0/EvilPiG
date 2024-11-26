@@ -11,7 +11,7 @@ cd EvilPiG
 # Update the package list and install necessary packages
 apt update -y
 apt install -y \
-    curl gcc git linux-firmware m4 autoconf htop python3-pip \
+    curl gcc git linux-firmware m4 autoconf htop python3-pip libcurl4 \
     python3-setuptools python3-bluez python3-pydbus python3-psutil \
     psutils python3-dbus reaver tshark hashcat hcxdumptool macchanger \
     tmux speedtest-cli autoconf automake libtool pkg-config m4 \
