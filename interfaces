@@ -8,5 +8,5 @@ iface wlan0 inet dhcp
     wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 
 auto wlx0036765525cc
-iface wlx0036765525cc inet dhcp
+iface wlx0036765525cc inet manual
     wpa-conf /etc/wpa_supplicant/wpa_supplicant-attack.conf

@@ -166,7 +166,7 @@ def start_evilpig_wifi(attack):
             stop_evilpig_wifi(i)
         else:
             pass
-    process = subprocess.Popen(['bash', '/opt/evilpig/evilpig-wifi.sh', str(attack)])
+    process = subprocess.Popen(['bash', '/opt/EvilPiG/evilpig-wifi.sh', str(attack)])
     with open('/tmp/evilpig-wifi.pid', 'w') as f:
         f.write(str(process.pid))
 

@@ -20,8 +20,8 @@ def clean_log_file(input_file, output_file):
         print(f"Erro ao processar o arquivo: {e}")
 
 # Defina os caminhos dos arquivos
-input_log_file = '/opt/evilpig/wifite3/wifite.log'
-output_log_file = '/opt/evilpig/wifite3/cleaned_wifite.log'
+input_log_file = '/opt/EvilPiG/wifite3/wifite.log'
+output_log_file = '/opt/EvilPiG/wifite3/cleaned_wifite.log'
 
 # Configuração da página
 st.set_page_config(page_title="Wifite3 Dashboard", page_icon="🔗")
@@ -32,7 +32,7 @@ st.title("Dashboard Wifite3")
 # Função para carregar redes invadidas do arquivo cracked.json
 def load_cracked_networks():
     try:
-        with open('/opt/evilpig/wifite3/cracked.txt', 'r') as f:
+        with open('/opt/EvilPiG/wifite3/cracked.txt', 'r') as f:
             networks = json.load(f)
         return pd.DataFrame(networks)
     except Exception as e:

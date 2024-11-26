@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=root
-ExecStart=/bin/bash /opt/evilpig/evilpig-wifi.sh &
+ExecStart=/bin/bash /opt/EvilPiG/evilpig-wifi.sh &
 Restart=always
 RestartSec=5
 
