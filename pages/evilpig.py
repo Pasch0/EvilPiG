@@ -214,76 +214,44 @@ st.divider()
 # Prints status of evilpig-wifi service
 st.subheader("Auto Attack Status")
 
-with st.container():
-    col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 1])  # Adjusts column widths
+# Function to generate colored circle
+def colored_circle(status):
+    if status:
+        return "🟢"
+    else:
+        return "🔴"
 
-    # Service evilpig-wifi-WPS
-    with col1:
-        st.write("**WPS Pixie Dust**")
-    
-    with col2:
-        if check_evilpig_wifi_status(1):
-            st.markdown("<span style='color: green;'>Running</span>", unsafe_allow_html=True)
-        else:
-            st.markdown("<span style='color: red;'>Stopped</span>", unsafe_allow_html=True)
-
-    with col3:
-        if st.button("Start", key="start_evilpig-wifi-wps"):
-            start_evilpig_wifi(1)
-            st.rerun()
-    with col4:
+# Service evilpig-wifi-WPS
+with st.expander(f"{colored_circle(check_evilpig_wifi_status(1))} WPS Pixie Dust"):
+    if check_evilpig_wifi_status(1):
         if st.button("Stop", key="stop_evilpig_wifi-wps"):
             stop_evilpig_wifi(1)
             st.rerun()
-    with col5:
-        if st.button("Restart", key="restart_evilpig_wifi-wps"):
-            restart_evilpig_wifi(1)
+    else:
+        if st.button("Start", key="start_evilpig_wifi-wps"):
+            start_evilpig_wifi(1)
             st.rerun()
 
-     # Service evilpig-wifi
-    with col1:
-        st.write("**WPA/WPA2 Handshake Cracking**")
-    
-    with col2:
-        if check_evilpig_wifi_status(2):
-            st.markdown("<span style='color: green;'>Running</span>", unsafe_allow_html=True)
-        else:
-            st.markdown("<span style='color: red;'>Stopped</span>", unsafe_allow_html=True)
-
-    with col3:
-        if st.button("Start", key="start_evilpig-wifi-wpa"):
-            start_evilpig_wifi(2)
-            st.rerun()
-    with col4:
+# Service evilpig-wifi
+with st.expander(f"{colored_circle(check_evilpig_wifi_status(2))} WPA/WPA2 Handshake Cracking"):
+    if check_evilpig_wifi_status(2):
         if st.button("Stop", key="stop_evilpig_wifi-wpa"):
             stop_evilpig_wifi(2)
             st.rerun()
-    with col5:
-        if st.button("Restart", key="restart_evilpig_wifi-wpa"):
-            restart_evilpig_wifi(2)
+    else:
+        if st.button("Start", key="start_evilpig_wifi-wpa"):
+            start_evilpig_wifi(2)
             st.rerun()
 
-     # Service evilpig-wifi
-    with col1:
-        st.write("**WPA/WPS Mixed Attack**")
-    
-    with col2:
-        if check_evilpig_wifi_status(3):
-            st.markdown("<span style='color: green;'>Running</span>", unsafe_allow_html=True)
-        else:
-            st.markdown("<span style='color: red;'>Stopped</span>", unsafe_allow_html=True)
-
-    with col3:
-        if st.button("Start", key="start_evilpig-wifi-mix"):
-            start_evilpig_wifi(3)
-            st.rerun()
-    with col4:
+# Service evilpig-wifi
+with st.expander(f"{colored_circle(check_evilpig_wifi_status(3))} WPA/WPS Mixed Attack"):
+    if check_evilpig_wifi_status(3):
         if st.button("Stop", key="stop_evilpig_wifi-mix"):
             stop_evilpig_wifi(3)
             st.rerun()
-    with col5:
-        if st.button("Restart", key="restart_evilpig_wifi-mix"):
-            restart_evilpig_wifi(3)
+    else:
+        if st.button("Start", key="start_evilpig_wifi-mix"):
+            start_evilpig_wifi(3)
             st.rerun()
 
 st.divider()

@@ -1,0 +1,16 @@
+[
+  {
+    "type": "WPS",
+    "date": 1732749215,
+    "essid": "Teste",
+    "bssid": "28:6F:B9:2B:45:54",
+    "psk": "amendoeiras"
+  },
+  {
+    "type": "WPS",
+    "date": 1732749215,
+    "essid": "VIANAPASCOAL",
+    "bssid": "28:6F:B9:2B:45:59",
+    "psk": "amendoeira"
+  }
+]
