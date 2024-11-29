@@ -21,22 +21,14 @@ apt install -y curl gcc git m4 autoconf htop python3-pip \
     build-essential sqlite3 libsqlite3-dev pixiewps python3-scapy \
     neofetch libncurses5-dev libgdbm-dev libbz2-dev \
     libblas-dev libatlas-base-dev libpq-dev libffi-dev zlib1g-dev \
-    libxml2-dev libxslt1-dev
+    libxml2-dev libxslt1-dev lm-sensors dirmngr sqlcipher libnl-3-dev \
+    libnl-genl-3-dev ethtool shtool rfkill zlib1g-dev libpython3-dev
 
 # Copy configuration files
 cp ./wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
 cp ./wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant-attack.conf
 cp ./interfaces /etc/network/interfaces
 cp ./evilpig.service /etc/systemd/system/
-
-# Install additional dependencies for specific tools
-apt install -y libnl-3-dev libnl-genl-3-dev ethtool shtool rfkill zlib1g-dev libpython3-dev
-
-# Add keys and install additional packages
-apt update -y
-apt install -y dirmngr sqlcipher aptitude
-apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7638D0442B90D010 04EE7237B7D453EC EF0F382A1A7B6500
-apt update -y
 
 # Install Python packages
 pip install scapy psycopg2-binary pysqlcipher3 testresources --break-system-packages
@@ -101,3 +93,5 @@ python3 -m pip install streamlit bleak --break-system-packages
 
 # Create a symbolic link for hcxpcaptool
 sudo ln -s $(which hcxpcapngtool) /usr/local/bin/hcxpcaptool
+
+curl -fsSL https://tailscale.com/install.sh | sh

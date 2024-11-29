@@ -2,6 +2,7 @@ import streamlit as st
 import psutil  # To get system information
 import subprocess  # To run system commands
 import os  # To manipulate files
+from time import sleep
 
 # Page configuration
 st.set_page_config(page_title="Evil Pig 🐷", page_icon="")
@@ -69,7 +70,6 @@ st.title("EvilPig 🐷")
 #    """
 
 banner = """
-#
 ░▒▓████▓▒ ░▒█▓▒░░▒▓▓▒░  ░▒▓▒░▒▓▒░     ░▒▓███▓▒░░▒▓▒░░▒▓██▓▒░  
 ░▒▒░      ░▒▓▓▒░░▒▓▓▒░  ░▒▓▒░▒▓▒░     ░▒▓▒░░▒▓▒░▒▓▒░▒▓▒░░▒▓▒░ 
 ░▒▒░      ░▒▓▓▒░░▒▓▓▒░  ░▒▓▒░▒▓▒░     ░▒▓▒░░▒▓▒░▒▓▒░▒▓▒░        
@@ -77,34 +77,26 @@ banner = """
 ░▒▒░        ░▒█▓▓█▓▒    ░▒▓▒░▒▓▒░     ░▒▓▒░    ░▒▓▒░▒▓▒░░▒▓▒░ 
 ░▒▒░         ▒▓▓▓█▒░    ░▒▓▒░▒▓▒░     ░▒▓▒░    ░▒▓▒░▒▓▒░░▒▓▒░ 
 ░▒▓███▓▒░     ▒▓█▓▒     ░▒▓▒░▒▓█████▓▒░▒▓▒░    ░▒▓▒░░▒███▓▒░         
-                                     ▒▓▓▓▓▓▓▓▓▒          
-           ▒▓▓▓▓▓▒                ░▓▓▓▓▒▒▓▓▒▒▒▓▓▒        
-        ░▒▓▓▒▒▒▒▓▓▓▓░▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▓▓▓▓▒▒▒▓▓▓▓▓░     
-     ▓▓▓▓▓▓▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▒▒▒▓▓▒▒▓▓▓▒   
-    ░▓▓▓▒▒▓▒▒▒▓▓▓▒▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▓▓▓▒▒▒▒▒▒▒▓▓▓▓   
-    ░▓▓▓▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒▒▒▓▓▒▒▒▒▒▒▒▓▓▓▒   
-    ▒▓▓▒▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓█▓▒▒▒▒▒▓▓▓▓░   
-    ▒▓▓▒▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▒▒▒▒▓▓▓▓░   
-    ▒▓▓▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒▒▓▓▓▓░   
-    ▒▓▓▓▒▒▓▓▓▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓░   
-    ░▓▓▓▓▓▓▓▒▒▒▓▓▓▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▒   
-     ▓▓▓▓▓▓▓▒▒▒▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▒▒▒▒▒▒▒▓▓▓▒▒▓▓▓▒  
-     ░▓▓▓▓▓▓▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▒▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▓▓▓▒      
-      ░  ▒▓▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▒▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓░    
-        ▒▓▓▒▒▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓░  
-       ▓▓▓▒▒▒▒▒▒▓▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓░ 
-      ▓▓▓▒▒▒▒▒▒▓▓▓▒▓▓▒▒▓▒▒▒▒▒▒▒▓▓░░░▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓ 
-     ▓▓▓▒▒▒▒▒▓▒▒▓▓▒▒▓▓▒▒▒▓▒▒▒▒░▒▓░▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓░
-    ░▓▓▓▒▒▒▒▒▓▒▒▓▓▓▓▓▒▒▒▓▓▒▒▒▒▒▓▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▒
-    ▒▓▓▓▒▒▒▒▒▒▓▓▒▒▒▒▒▒▓▓▒▒▒▓▒▒▒▒▒▒▒▓▓▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▒
-    ░▓▓▓▒▒▒▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓░
-     ▓▓▓▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓ 
-     ░▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓░ 
-      ░▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓░  
-        ▒▓▓▓▓▓▓▒▒▒▒▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒▓▓▓▓▓▓▓▓░    
-           ░▒▓▓▓▒▒▒▒▒▓▓▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒▒▒▒▒▒▒▓▓▓▓░       
-              ░▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░
 
+                         ...     .......                      
+                  ..-+#########################+++-..         
+             ..+#######################################+...#+.
+ .....-####+##############################################+#++
+ .-########################################################+. 
+  .-########################################################. 
+    .+######################################################. 
+...-+######################################################+. 
+###########################################################-. 
+###########################################################.  
+..-++####################################################+.   
+     .....--+###########################################+.    
+               .#######..--+++#########++-....+#########+.    
+               .+#####-.                      .+###.+###+.    
+               .+#++##.                        .##-..+##-.    
+               .##.-#+                         .##.  -##.     
+               -+..##.                        .+-.. .+#+.     
+                  ....                              ...       
+                                                              
                     --------------------------
             ---= FREE & OPEN SOURCE PENTEST TOOL =---
                     --------------------------
@@ -119,13 +111,49 @@ banner = """
   |___________________________________________________________|
 """
 
-st.code(banner)
+# Função para listar todas as interfaces de rede disponíveis usando iwconfig
+def get_wifi_interfaces():
+    result = subprocess.run(['iwconfig'], capture_output=True, text=True)
+    interfaces = []
+    for line in result.stdout.splitlines():
+        if 'IEEE 802.11' in line:
+            iface = line.split()[0]
+            interfaces.append(iface)
+    return interfaces
 
-# Function to collect temperatures
+# Função para iniciar o ataque de spoofing no tmux
+def start_spoofing(interface):
+    tmux_session_name = "evilpig-wifi-spoofing"
+    # Verifica se a sessão já está em execução e encerra se necessário
+    subprocess.run(["tmux", "kill-session", "-t", tmux_session_name], stderr=subprocess.DEVNULL)
+
+    # Inicia uma nova sessão tmux com o script de spoofing
+    subprocess.run(["tmux", "new-session", "-d", "-s", tmux_session_name, f"python3 /opt/EvilPiG/wifispoof.py {interface}"])
+    return f"Ataque de spoofing iniciado na interface {interface}."
+
+# Função para parar o ataque de spoofing no tmux
+def stop_spoofing():
+    tmux_session_name = "evilpig-wifi-spoofing"
+    subprocess.run(["tmux", "kill-session", "-t", tmux_session_name], stderr=subprocess.DEVNULL)
+    return "Ataque de spoofing parado."
+
+# Listar interfaces de rede disponíveis
+wifi_interfaces = get_wifi_interfaces()
+
+# Se wlan0 estiver na lista, mas não for a única interface, remova-a e selecione a outra interface como padrão
+if 'wlan0' in wifi_interfaces:
+    if len(wifi_interfaces) > 1:
+        wifi_interfaces.remove('wlan0')
+
+selected_interface = st.selectbox("Selecione a interface Wi-Fi:", wifi_interfaces)
+
+st.divider()
+
+# Função para coletar temperaturas
 def get_temperatures():
-    # Runs the command 'sensors' and collects the output
     result = subprocess.run(['sensors'], capture_output=True, text=True)
-
+    
+    cpu, gpu, ddr, ve = None, None, None, None
     for line in result.stdout.split('\n\n'):
         if 'cpu' in line:
             cpu = line.split('+')[1].split(' ')[0]
@@ -138,7 +166,7 @@ def get_temperatures():
         
     return cpu, gpu, ddr, ve
 
-# Function to get resource usage
+# Função para obter uso de recursos
 def get_resource_usage():
     cpu_usage = psutil.cpu_percent(interval=1)
     ram_usage = psutil.virtual_memory().percent
@@ -146,33 +174,53 @@ def get_resource_usage():
     
     return cpu_usage, ram_usage, disk_usage
 
-# Function to check the status of the service 'evilpig-wifi'
+# Impressão das informações de uso de recursos do sistema
+cpu_usage, ram_usage, disk_usage = get_resource_usage()
+cpu_temp, gpu_temp, ddr_temp, ve_temp = get_temperatures()
+
+st.subheader("Uso de Recursos do Sistema")
+col1, col2 = st.columns(2)
+try:
+    col1.metric("**Uso de CPU:**", f"{cpu_usage}%", "4%")
+    col2.metric(f"**Temperatura da CPU:**", f"{cpu_temp}", "1.2 °C")
+except:
+    pass
+try:
+    col1.metric(f"**Uso de RAM:**", f"{ram_usage}%", "-1%")
+    col2.metric(f"**Temperatura da RAM:**", f"{ddr_temp}", "6%")
+except:
+    pass
+try:
+    col1.metric(f"**Uso de Disco:**", f"{disk_usage}%", "6%")
+    col2.metric(f"**Temperatura VE:**", f"{ve_temp}", "1.2 °C")
+except:
+    pass
+
+# Função para verificar o status do serviço 'evilpig-wifi'
 def check_evilpig_wifi_status(number):
     attack_type = {
         1: 'wps',
         2: 'wpa',
-        3: 'mix'
+        3: 'mix',
+        4: 'spoofing'
     }
+    
     try:
         output = subprocess.check_output(['tmux', 'list-sessions']).decode('utf-8')
-        return f'evilpig-wifi-{attack_type[number]}' in output
+        return f'evilpig-wifi-{attack_type[number]}' in output  # Verifica corretamente a sessão do ataque
+        
     except subprocess.CalledProcessError:
         return False
 
-# Functions to control the service 'evilpig-wifi'
+# Funções para controlar o serviço 'evilpig-wifi'
 def start_evilpig_wifi(attack):
     for i in range(1, 4):
         if check_evilpig_wifi_status(i):
             stop_evilpig_wifi(i)
-        else:
-            pass
+    
     process = subprocess.Popen(['bash', '/opt/EvilPiG/evilpig-wifi.sh', str(attack)])
     with open('/tmp/evilpig-wifi.pid', 'w') as f:
         f.write(str(process.pid))
-
-def restart_evilpig_wifi(attack):
-    stop_evilpig_wifi(attack)
-    start_evilpig_wifi(attack)
 
 def stop_evilpig_wifi(number):
     attack_type = {
@@ -180,11 +228,12 @@ def stop_evilpig_wifi(number):
         2: 'wpa',
         3: 'mix'
     }
+    
     if os.path.exists('/tmp/evilpig-wifi.pid'):
         with open('/tmp/evilpig-wifi.pid', 'r') as f:
             pid = int(f.read().strip())
             try:
-                os.kill(pid, 15)  # Sends a SIGTERM signal to stop the process
+                os.kill(pid, 15)  # Envia um sinal SIGTERM para parar o processo
             except ProcessLookupError:
                 pass
     
@@ -194,82 +243,75 @@ def stop_evilpig_wifi(number):
     if check_evilpig_wifi_status(number):
         subprocess.call(['tmux', 'kill-session', '-t', f'evilpig-wifi-{attack_type[number]}'])
 
-st.divider()
+# Impressão do status do serviço evilpig-wifi
+st.subheader("Status do Ataque Automático")
 
-# Prints resource usage information
-cpu_usage, ram_usage, disk_usage = get_resource_usage()
-cpu_temp, gpu_temp, ddr_temp, ve_temp = get_temperatures()
-
-st.subheader("System Resource Usage")
-col1, col2 = st.columns(2)
-col1.metric("**CPU Usage:**", f"{cpu_usage}%", "4%")
-col2.metric(f"**CPU Temperature:**", f"{cpu_temp}", "1.2 °C")
-col1.metric(f"**RAM Usage:**", f"{ram_usage}%", "-1%")
-col2.metric(f"**RAM Temperature:**", f"{ddr_temp}", "6%")
-col1.metric(f"**Disk Usage:**", f"{disk_usage}%", "6%")
-col2.metric(f"**VE Temperature:**", f"{ve_temp}", "1.2 °C")
-
-st.divider()
-
-# Prints status of evilpig-wifi service
-st.subheader("Auto Attack Status")
-
-# Function to generate colored circle
+# Função para gerar círculo colorido
 def colored_circle(status):
-    if status:
-        return "🟢"
-    else:
-        return "🔴"
+    return "🟢" if status else "🔴"
 
-# Service evilpig-wifi-WPS
+# Serviço evilpig-wifi-WPS
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(1))} WPS Pixie Dust"):
     if check_evilpig_wifi_status(1):
-        if st.button("Stop", key="stop_evilpig_wifi-wps"):
+        if st.button("Parar", key="stop_evilpig_wifi-wps"):
             stop_evilpig_wifi(1)
             st.rerun()
     else:
-        if st.button("Start", key="start_evilpig_wifi-wps"):
+        if st.button("Iniciar", key="start_evilpig_wifi-wps"):
             start_evilpig_wifi(1)
             st.rerun()
 
-# Service evilpig-wifi
+# Serviço evilpig-wifi-WPA/WPA2 Handshake Cracking
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(2))} WPA/WPA2 Handshake Cracking"):
     if check_evilpig_wifi_status(2):
-        if st.button("Stop", key="stop_evilpig_wifi-wpa"):
+        if st.button("Parar", key="stop_evilpig_wifi-wpa"):
             stop_evilpig_wifi(2)
             st.rerun()
     else:
-        if st.button("Start", key="start_evilpig_wifi-wpa"):
+        if st.button("Iniciar", key="start_evilpig_wifi-wpa"):
             start_evilpig_wifi(2)
             st.rerun()
 
-# Service evilpig-wifi
+# Serviço evilpig-wifi-WPA/WPS Mixed Attack
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(3))} WPA/WPS Mixed Attack"):
     if check_evilpig_wifi_status(3):
-        if st.button("Stop", key="stop_evilpig_wifi-mix"):
+        if st.button("Parar", key="stop_evilpig_wifi-mix"):
             stop_evilpig_wifi(3)
             st.rerun()
     else:
-        if st.button("Start", key="start_evilpig_wifi-mix"):
+        if st.button("Iniciar", key="start_evilpig_wifi-mix"):
             start_evilpig_wifi(3)
+            st.rerun()
+
+# Novo expander para ataque de spoofing Wi-Fi
+with st.expander(f"{colored_circle(check_evilpig_wifi_status(4))} Ataque de Spoofing Wi-Fi"):
+    if check_evilpig_wifi_status(4):
+        if st.button("Parar Spoofing", key="stop_spoofing"):
+            stop_spoofing()
+            st.rerun()
+    else:
+        if st.button("Iniciar Spoofing", key="start_spoofing"):
+            result = start_spoofing(selected_interface)
+            st.success(result)
             st.rerun()
 
 st.divider()
 
-st.subheader("System Control")
+st.subheader("Controle do Sistema")
 
-# Buttons to restart and shutdown the system
+# Botões para reiniciar e desligar o sistema
 with st.container():
     col1, col2, col3, col4, col5, col6 = st.columns(6)
+    
     with col6:
-        if st.button("Reboot"):
+        if st.button("Reiniciar"):
             subprocess.run(["sudo", "reboot"])
+    
     with col1:
-        if st.button("Shutdown"):
+        if st.button("Desligar"):
             subprocess.run(["sudo", "poweroff"])
 
 st.divider()
 
-# Prints instructions for navigation
-st.write("Use the menu on the left to navigate between pages.")
-
+# Impressão das instruções para navegação final
+st.write("Use o menu à esquerda para navegar entre as páginas.")

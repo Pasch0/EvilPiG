@@ -4,6 +4,7 @@ pages = {
     "Attacks": [
         st.Page("pages/evilpig.py", title="EvilPig"),
         st.Page("pages/blueducky.py", title="BlueDucky"),
+        st.Page("pages/bluetooth-dos.py", title="Bluetooth DoS"),
         st.Page("pages/wifite.py", title="Wifite3"),
         st.Page("pages/wifiphishing.py", title="Wifi Phishing"),
         st.Page("pages/recon.py", title="Recon Tools"),
