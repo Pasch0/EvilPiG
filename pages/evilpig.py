@@ -111,6 +111,8 @@ banner = """
   |___________________________________________________________|
 """
 
+st.code(banner)
+
 # Função para listar todas as interfaces de rede disponíveis usando iwconfig
 def get_wifi_interfaces():
     result = subprocess.run(['iwconfig'], capture_output=True, text=True)
@@ -202,15 +204,31 @@ def check_evilpig_wifi_status(number):
         1: 'wps',
         2: 'wpa',
         3: 'mix',
-        4: 'spoofing'
+        4: 'spoofing',
+        5: 'ble-scan'
     }
+    if number != 5:
+        try:
+            output = subprocess.check_output(['tmux', 'list-sessions']).decode('utf-8')
+            return f'evilpig-wifi-{attack_type[number]}' in output  # Verifica corretamente a sessão do ataque
+        except subprocess.CalledProcessError:
+            return False
+    else:
+        try:
+            return 'Active: active (running)'in subprocess.run(['systemctl', 'status', 'hci-eye.service'], capture_output=True, text=True).stdout.strip()
+        except subprocess.CalledProcessError:
+            return False
     
-    try:
-        output = subprocess.check_output(['tmux', 'list-sessions']).decode('utf-8')
-        return f'evilpig-wifi-{attack_type[number]}' in output  # Verifica corretamente a sessão do ataque
-        
-    except subprocess.CalledProcessError:
-        return False
+# criar função que inicia ataque ble-scan
+def start_ble_scan(interface):
+    stop_ble_scan()
+    subprocess.run(['systemctl', 'start', 'hci-eye.service'])
+    return f"ble-scan iniciado na interface {interface}."
+
+# criar função que para ataque ble-scan
+def stop_ble_scan():
+    subprocess.run(['systemctl', 'stop', 'hci-eye.service'])
+    return "ble-scan parado."
 
 # Funções para controlar o serviço 'evilpig-wifi'
 def start_evilpig_wifi(attack):
@@ -292,6 +310,17 @@ with st.expander(f"{colored_circle(check_evilpig_wifi_status(4))} Ataque de Spoo
     else:
         if st.button("Iniciar Spoofing", key="start_spoofing"):
             result = start_spoofing(selected_interface)
+            st.success(result)
+            st.rerun()
+
+with st.expander(f"{colored_circle(check_evilpig_wifi_status(5))} Scan Bluetooth"):
+    if check_evilpig_wifi_status(5):
+        if st.button("Parar ble-scan", key="stop_ble-scan"):
+            stop_ble_scan()
+            st.rerun()
+    else:
+        if st.button("Iniciar ble-scan", key="start_ble-scan"):
+            result = start_ble_scan(selected_interface)
             st.success(result)
             st.rerun()
 

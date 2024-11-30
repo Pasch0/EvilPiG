@@ -1,0 +1,12 @@
+[Unit]
+Description=Executa o script hci-eye.py
+
+[Service]
+ExecStart=/usr/bin/python3 /opt/EvilPiG/hci-eye.py
+WorkingDirectory=/opt/EvilPiG/
+StandardOutput=journal
+StandardError=journal
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

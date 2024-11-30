@@ -2,7 +2,6 @@ import streamlit as st
 import json
 from datetime import datetime
 import subprocess
-import sys
 
 # Função para carregar os dispositivos do arquivo JSON
 def load_devices():
@@ -28,8 +27,12 @@ def is_attack_running():
 # Função para iniciar um ataque
 def start_attack(mac_address, packet_size, thread_count):
     try:
-        # Executa o script ble-dos.py em uma nova sessão tmux
-        subprocess.run(['tmux', 'new-session', '-d', '-s', 'ble-dos', sys.executable, 'ble-dos.py', mac_address, str(packet_size), str(thread_count)])
+        # Comando para executar o script bash em uma nova sessão tmux
+        command = f"bash ble-dos.sh {mac_address} {packet_size} {thread_count}"
+        
+        # Inicia uma nova sessão tmux e executa o comando
+        subprocess.run(['tmux', 'new-session', '-d', '-s', 'ble-dos', command], check=True, shell=False)
+        
         st.success(f"[*] Ataque iniciado contra {mac_address} com pacotes de {packet_size} bytes usando {thread_count} threads.")
     except Exception as e:
         st.error(f"[!] ERROR ao iniciar o ataque: {str(e)}")
@@ -37,6 +40,7 @@ def start_attack(mac_address, packet_size, thread_count):
 # Função para parar o ataque
 def stop_attack():
     try:
+        # Encerra a sessão tmux
         subprocess.run(['tmux', 'kill-session', '-t', 'ble-dos'])
         st.success("[*] Ataque interrompido.")
     except Exception as e:
@@ -46,7 +50,7 @@ def stop_attack():
 devices = load_devices()
 
 # Título da aplicação
-st.title("Dispositivos Bluetooth Encontrados")
+st.title("Ping Flood de camada 2")
 
 # Slider para filtrar pelo número de dispositivos a serem exibidos
 count_limit = st.slider(
@@ -62,15 +66,15 @@ count_limit = st.slider(
 packet_size = st.slider(
     "Tamanho do pacote (bytes):",
     min_value=1,
-    max_value=5000,
+    max_value=600,
     value=64,  # Valor padrão
 )
 
 thread_count = st.slider(
     "Quantidade de threads:",
     min_value=1,
-    max_value=5000,
-    value=10,  # Valor padrão
+    max_value=4,
+    value=3,  # Valor padrão
 )
 
 # Verificar se há um ataque em andamento
@@ -78,6 +82,8 @@ attack_running = is_attack_running()
 
 if attack_running:
     st.markdown("<h5 style='color: green;'>Ataque em andamento!</h5>", unsafe_allow_html=True)
+    st.write("[*] Para que o ataque seja mais eficiente, acesso o dispositivo via ssh e acesse a sessão do tmux com:")
+    st.code("sudo tmux attach -t ble-dos")
 
 # Botão para parar o ataque se estiver em andamento
 if attack_running and st.button("Parar Ataque"):

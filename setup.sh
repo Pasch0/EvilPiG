@@ -11,7 +11,7 @@ cd EvilPiG
 # Update the package list and install necessary packages
 apt update -y
 
-apt install linux-firmware -y
+#apt install linux-firmware -y
 
 apt install -y curl gcc git m4 autoconf htop python3-pip \
     python3-setuptools python3-bluez python3-pydbus python3-psutil \
@@ -29,6 +29,7 @@ cp ./wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
 cp ./wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant-attack.conf
 cp ./interfaces /etc/network/interfaces
 cp ./evilpig.service /etc/systemd/system/
+cp ./hci-eye.service /etc/systemd/system/
 
 # Install Python packages
 pip install scapy psycopg2-binary pysqlcipher3 testresources --break-system-packages
@@ -85,11 +86,14 @@ systemctl daemon-reload
 systemctl enable evilpig
 systemctl start evilpig
 
+systemctl enable hci-eye
+systemctl start hci-eye
+
 # Restart networking service
 systemctl restart networking
 
 # Install Streamlit and Bleak
-python3 -m pip install streamlit bleak --break-system-packages
+python3 -m pip install streamlit --break-system-packages
 
 # Create a symbolic link for hcxpcaptool
 sudo ln -s $(which hcxpcapngtool) /usr/local/bin/hcxpcaptool
