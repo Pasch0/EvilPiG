@@ -28,7 +28,7 @@ def is_attack_running():
 def start_attack(mac_address, packet_size, thread_count):
     try:
         # Comando para executar o script bash em uma nova sessão tmux
-        command = f"bash ble-dos.sh {mac_address} {packet_size} {thread_count}"
+        command = f"python3 ble-dos.py {mac_address} {packet_size} {thread_count}"
         
         # Inicia uma nova sessão tmux e executa o comando
         subprocess.run(['tmux', 'new-session', '-d', '-s', 'ble-dos', command], check=True, shell=False)

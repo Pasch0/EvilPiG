@@ -8,6 +8,8 @@ git clone https://github.com/Pasch0/EvilPiG
 
 cd EvilPiG
 
+bash change_hostname.sh evilpig
+
 # Update the package list and install necessary packages
 apt update -y
 
@@ -55,12 +57,12 @@ cd ../
 rm -rf hcxtools
 
 # Install Hcxdumptool
-git clone https://github.com/ZerBea/hcxdumptool.git
-cd hcxdumptool
-make
-make install
-cd ../
-rm -rf hcxdumptool
+#git clone https://github.com/ZerBea/hcxdumptool.git
+#cd hcxdumptool
+#make
+#make install
+#cd ../
+#rm -rf hcxdumptool
 
 # Install Cowpatty
 git clone https://github.com/joswr1ght/cowpatty.git
