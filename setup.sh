@@ -21,7 +21,7 @@ apt install -y curl gcc git m4 autoconf htop python3-pip \
     tmux speedtest-cli autoconf automake libtool pkg-config m4 \
     autoconf-archive libcurl4-openssl-dev libpcap-dev libssl-dev \
     build-essential sqlite3 libsqlite3-dev pixiewps python3-scapy \
-    neofetch libncurses5-dev libgdbm-dev libbz2-dev \
+    neofetch libncurses5-dev libgdbm-dev libbz2-dev masscan nmap \
     libblas-dev libatlas-base-dev libpq-dev libffi-dev zlib1g-dev \
     libxml2-dev libxslt1-dev lm-sensors dirmngr sqlcipher libnl-3-dev \
     libnl-genl-3-dev ethtool shtool rfkill zlib1g-dev libpython3-dev
