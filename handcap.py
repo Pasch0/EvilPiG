@@ -33,10 +33,11 @@ if __name__ == "__main__":
         while True:
             start_tmux_session(interface, caplet)
             count += 1
-            if count >= 5:
+            if count <= 5:
                 sleep(3)
             else:
                 sleep(30)
+                sys.exit(0)
     except KeyboardInterrupt:
         print("Encerrando o script...")
         sys.exit(0)

