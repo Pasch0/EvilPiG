@@ -117,11 +117,16 @@ st.code(banner)
 def get_wifi_interfaces():
     result = subprocess.run(['iwconfig'], capture_output=True, text=True)
     interfaces = []
+    
     for line in result.stdout.splitlines():
-        if 'IEEE 802.11' in line:
+        # Verifica se a linha começa com 'w' e não está vazia
+        if line.startswith('w'):
+            # Divide a linha e pega o primeiro elemento
             iface = line.split()[0]
             interfaces.append(iface)
+    
     return interfaces
+
 
 # Função para iniciar o ataque de spoofing no tmux
 def start_spoofing(interface):
@@ -146,6 +151,8 @@ wifi_interfaces = get_wifi_interfaces()
 if 'wlan0' in wifi_interfaces:
     if len(wifi_interfaces) > 1:
         wifi_interfaces.remove('wlan0')
+    else:
+        st.error("Apenas a interface Wifi wlan0 está disponível.")
 
 selected_interface = st.selectbox("Selecione a interface Wi-Fi:", wifi_interfaces)
 
@@ -236,7 +243,7 @@ def start_evilpig_wifi(attack):
         if check_evilpig_wifi_status(i):
             stop_evilpig_wifi(i)
     
-    process = subprocess.Popen(['bash', '/opt/EvilPiG/evilpig-wifi.sh', str(attack)])
+    process = subprocess.Popen(['bash', '/opt/EvilPiG/evilpig-wifi.sh', selected_interface,str(attack)])
     with open('/tmp/evilpig-wifi.pid', 'w') as f:
         f.write(str(process.pid))
 

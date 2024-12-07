@@ -56,14 +56,6 @@ make install
 cd ../
 rm -rf hcxtools
 
-# Install Hcxdumptool
-#git clone https://github.com/ZerBea/hcxdumptool.git
-#cd hcxdumptool
-#make
-#make install
-#cd ../
-#rm -rf hcxdumptool
-
 # Install Cowpatty
 git clone https://github.com/joswr1ght/cowpatty.git
 cd cowpatty
@@ -81,7 +73,7 @@ cd ../../
 rm -rf bully
 
 # Install Wifite3
-git clone https://github.com/4k4xs4pH1r3/wifite3
+#git clone https://github.com/4k4xs4pH1r3/wifite3
 
 # Reload systemd daemon and enable/start the evilpig service
 systemctl daemon-reload
@@ -94,10 +86,14 @@ systemctl start hci-eye
 # Restart networking service
 systemctl restart networking
 
+cd /opt/EvilPiG
+
 # Install Streamlit and Bleak
-python3 -m pip install streamlit --break-system-packages
+python3 -m pip install -r requirements.txt --break-system-packages
 
 # Create a symbolic link for hcxpcaptool
 sudo ln -s $(which hcxpcapngtool) /usr/local/bin/hcxpcaptool
 
 curl -fsSL https://tailscale.com/install.sh | sh
+
+sudo reboot

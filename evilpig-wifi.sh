@@ -1,6 +1,12 @@
 #!/bin/bash
 
-INTERFACE="wlx0036765525cc"
+# Verifica se um parâmetro foi passado
+if [ $# -lt 2 ]; then
+    echo "Uso: $0 <interface_wifi> [1|2|3]"
+    exit 1
+fi
+
+INTERFACE="$1"
 
 # Função para iniciar a sessão do tmux
 start_session() {
@@ -49,21 +55,15 @@ start_session() {
     esac
 }
 
-# Verifica se um parâmetro foi passado
-if [ $# -eq 0 ]; then
-    echo "Uso: $0 [1|2|3]"
-    exit 1
-fi
-
 # Iniciar a sessão com o parâmetro fornecido
-start_session $1
+start_session $2
 
 # Loop para monitorar a sessão
 while true; do
     # Verifica se a sessão ainda está ativa
     if ! tmux has-session -t $SESSION_NAME 2>/dev/null; then
         echo "A sessão '$SESSION_NAME' foi encerrada. Reiniciando..."
-        start_session $1
+        start_session $2
     fi
     
     # Aguarda um tempo antes de verificar novamente

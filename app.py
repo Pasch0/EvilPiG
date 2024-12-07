@@ -20,5 +20,11 @@ pages = {
     ],
 }
 
+def cap_config():
+    return
+
+for server in cap_config():
+    pages[server.name] = [st.Page(f"pages/recon.py", title=f"Recon Tools{server.name}")]
+
 pg = st.navigation(pages)
 pg.run()
