@@ -60,8 +60,8 @@ A --> H(Bluetooth Scan)
 A --> F(BLE Ping Flood)
 A --> G(BLE BlueDucky Exploit)
 H --> I{Dispositivos BLE Próximos}
-F --> I
-G --> I
+F --> J(Dispositivo BLE Alvo)
+G --> J
 ```
 
 # A fazer
