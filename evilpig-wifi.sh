@@ -14,7 +14,7 @@ start_session() {
     case $1 in
         1)
             # Nome da sessão
-            SESSION_NAME="evilpig-wifi-wps"
+            SESSION_NAME="evilpig-wifi-wps-$INTERFACE"
 
             tmux new-session -d -s $SESSION_NAME
 
@@ -26,7 +26,7 @@ start_session() {
             ;;
         2)
             # Nome da sessão
-            SESSION_NAME="evilpig-wifi-wpa"
+            SESSION_NAME="evilpig-wifi-wpa-$INTERFACE"
 
             tmux new-session -d -s $SESSION_NAME
 
@@ -38,7 +38,7 @@ start_session() {
             ;;
         3)
             # Nome da sessão
-            SESSION_NAME="evilpig-wifi-mix"
+            SESSION_NAME="evilpig-wifi-mix-$INTERFACE"
 
             tmux new-session -d -s $SESSION_NAME
 

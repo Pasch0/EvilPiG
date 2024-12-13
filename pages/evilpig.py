@@ -130,7 +130,13 @@ def get_wifi_interfaces():
 
 # Função para iniciar o ataque de spoofing no tmux
 def start_spoofing(interface):
-    tmux_session_name = "evilpig-wifi-spoofing"
+    # coloca a interface em mondo monitor
+    subprocess.run(['ifconfig', interface, 'down'], check=True)
+    sleep(0.3)
+    subprocess.run(['iwconfig', interface, 'mode', 'monitor'], check=True)
+    sleep(0.3)
+    subprocess.run(['ifconfig', interface, 'up'], check=True)
+    tmux_session_name = "evilpig-wifi-spoofing-" + interface
     # Verifica se a sessão já está em execução e encerra se necessário
     subprocess.run(["tmux", "kill-session", "-t", tmux_session_name], stderr=subprocess.DEVNULL)
 
@@ -139,8 +145,8 @@ def start_spoofing(interface):
     return f"Ataque de spoofing iniciado na interface {interface}."
 
 # Função para parar o ataque de spoofing no tmux
-def stop_spoofing():
-    tmux_session_name = "evilpig-wifi-spoofing"
+def stop_spoofing(iface):
+    tmux_session_name = f"evilpig-wifi-spoofing-{iface}"
     subprocess.run(["tmux", "kill-session", "-t", tmux_session_name], stderr=subprocess.DEVNULL)
     return "Ataque de spoofing parado."
 
@@ -154,7 +160,7 @@ if 'wlan0' in wifi_interfaces:
     else:
         st.error("Apenas a interface Wifi wlan0 está disponível.")
 
-selected_interface = st.selectbox("Selecione a interface Wi-Fi:", wifi_interfaces)
+#selected_interface = st.selectbox("Selecione a interface Wi-Fi:", wifi_interfaces)
 
 st.divider()
 
@@ -217,7 +223,10 @@ def check_evilpig_wifi_status(number):
     if number != 5:
         try:
             output = subprocess.check_output(['tmux', 'list-sessions']).decode('utf-8')
-            return f'evilpig-wifi-{attack_type[number]}' in output  # Verifica corretamente a sessão do ataque
+            if f'evilpig-wifi-{attack_type[number]}' in output:
+                return output 
+            else:
+                return False
         except subprocess.CalledProcessError:
             return False
     else:
@@ -227,10 +236,10 @@ def check_evilpig_wifi_status(number):
             return False
     
 # criar função que inicia ataque ble-scan
-def start_ble_scan(interface):
+def start_ble_scan():
     stop_ble_scan()
     subprocess.run(['systemctl', 'start', 'hci-eye.service'])
-    return f"ble-scan iniciado na interface {interface}."
+    return f"ble-scan iniciado."
 
 # criar função que para ataque ble-scan
 def stop_ble_scan():
@@ -238,24 +247,28 @@ def stop_ble_scan():
     return "ble-scan parado."
 
 # Funções para controlar o serviço 'evilpig-wifi'
-def start_evilpig_wifi(attack):
+def start_evilpig_wifi(attack, iface):
     for i in range(1, 4):
         if check_evilpig_wifi_status(i):
-            stop_evilpig_wifi(i)
+            stop_evilpig_wifi(i, iface)
     
-    process = subprocess.Popen(['bash', '/opt/EvilPiG/evilpig-wifi.sh', selected_interface,str(attack)])
-    with open('/tmp/evilpig-wifi.pid', 'w') as f:
+    process = subprocess.Popen(['bash', '/opt/EvilPiG/evilpig-wifi.sh', iface, str(attack)])
+
+    with open(f'/tmp/evilpig-wifi-{attack}-{iface}.pid', 'w') as f:
         f.write(str(process.pid))
 
-def stop_evilpig_wifi(number):
+    return f"[*] Ataque de {attack} iniciado na interface {iface}."
+
+
+def stop_evilpig_wifi(attack, iface):
     attack_type = {
         1: 'wps',
         2: 'wpa',
         3: 'mix'
     }
     
-    if os.path.exists('/tmp/evilpig-wifi.pid'):
-        with open('/tmp/evilpig-wifi.pid', 'r') as f:
+    if os.path.exists(f'/tmp/evilpig-wifi-{attack}-{iface}.pid'):
+        with open(f'/tmp/evilpig-wifi-{attack}-{iface}.pid', 'r') as f:
             pid = int(f.read().strip())
             try:
                 os.kill(pid, 15)  # Envia um sinal SIGTERM para parar o processo
@@ -265,8 +278,8 @@ def stop_evilpig_wifi(number):
     if os.path.exists('/tmp/evilpig-wifi.pid'):
         os.remove('/tmp/evilpig-wifi.pid')
     
-    if check_evilpig_wifi_status(number):
-        subprocess.call(['tmux', 'kill-session', '-t', f'evilpig-wifi-{attack_type[number]}'])
+    if check_evilpig_wifi_status(attack):
+        subprocess.call(['tmux', 'kill-session', '-t', f'evilpig-wifi-{attack_type[attack]}-{iface}'])
 
 # Impressão do status do serviço evilpig-wifi
 st.subheader("Status do Ataque Automático")
@@ -278,46 +291,65 @@ def colored_circle(status):
 # Serviço evilpig-wifi-WPS
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(1))} WPS Pixie Dust"):
     if check_evilpig_wifi_status(1):
+        for wcard in wifi_interfaces:
+            if check_evilpig_wifi_status(1).find(wcard) != -1:
+                in_use_iface_wps = wcard
+        wps_iface = st.selectbox("Selecione a interface:", index=wifi_interfaces.index(in_use_iface_wps), options=wifi_interfaces, key="wps_iface")
         if st.button("Parar", key="stop_evilpig_wifi-wps"):
-            stop_evilpig_wifi(1)
+            stop_evilpig_wifi(1, wps_iface)
             st.rerun()
     else:
+        wps_iface = st.selectbox("Selecione a interface:", wifi_interfaces, key="wps_iface")
         if st.button("Iniciar", key="start_evilpig_wifi-wps"):
-            start_evilpig_wifi(1)
+            start_evilpig_wifi(1, wps_iface)
             st.rerun()
 
 # Serviço evilpig-wifi-WPA/WPA2 Handshake Cracking
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(2))} WPA/WPA2 Handshake Cracking"):
     if check_evilpig_wifi_status(2):
+        for wcard in wifi_interfaces:
+            if check_evilpig_wifi_status(2).find(wcard) != -1:
+                in_use_iface_wpa = wcard
+        wpa_iface = st.selectbox("Selecione a interface:", index=wifi_interfaces.index(in_use_iface_wpa), options=wifi_interfaces, key="wpa_iface")
         if st.button("Parar", key="stop_evilpig_wifi-wpa"):
-            stop_evilpig_wifi(2)
+            stop_evilpig_wifi(2, wpa_iface)
             st.rerun()
     else:
+        wpa_iface = st.selectbox("Selecione a interface:", wifi_interfaces, key="wpa_iface")
         if st.button("Iniciar", key="start_evilpig_wifi-wpa"):
-            start_evilpig_wifi(2)
+            start_evilpig_wifi(2, wpa_iface)
             st.rerun()
 
 # Serviço evilpig-wifi-WPA/WPS Mixed Attack
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(3))} WPA/WPS Mixed Attack"):
     if check_evilpig_wifi_status(3):
+        for wcard in wifi_interfaces:
+            if check_evilpig_wifi_status(3).find(wcard) != -1:
+                in_use_iface_mix = wcard
+        mix_iface = st.selectbox("Selecione a interface:", index=wifi_interfaces.index(in_use_iface_mix), options=wifi_interfaces, key="mix_iface")
         if st.button("Parar", key="stop_evilpig_wifi-mix"):
-            stop_evilpig_wifi(3)
+            stop_evilpig_wifi(3, mix_iface)
             st.rerun()
     else:
+        mix_iface = st.selectbox("Selecione a interface:", wifi_interfaces, key="mix_iface")
         if st.button("Iniciar", key="start_evilpig_wifi-mix"):
-            start_evilpig_wifi(3)
+            start_evilpig_wifi(3, mix_iface)
             st.rerun()
 
 # Novo expander para ataque de spoofing Wi-Fi
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(4))} Ataque de Spoofing Wi-Fi"):
     if check_evilpig_wifi_status(4):
+        for wcard in wifi_interfaces:
+            if check_evilpig_wifi_status(4).find(wcard) != -1:
+                in_use_iface_spoof = wcard
+        spoof_iface = st.selectbox("Selecione a interface:", index=wifi_interfaces.index(in_use_iface_spoof), options=wifi_interfaces, key="spoof_iface")
         if st.button("Parar Spoofing", key="stop_spoofing"):
-            stop_spoofing()
+            stop_spoofing(spoof_iface)
             st.rerun()
     else:
+        spoof_iface = st.selectbox("Selecione a interface:", wifi_interfaces, key="spoof_iface")
         if st.button("Iniciar Spoofing", key="start_spoofing"):
-            result = start_spoofing(selected_interface)
-            st.success(result)
+            start_spoofing(spoof_iface)
             st.rerun()
 
 with st.expander(f"{colored_circle(check_evilpig_wifi_status(5))} Scan Bluetooth"):
@@ -326,8 +358,9 @@ with st.expander(f"{colored_circle(check_evilpig_wifi_status(5))} Scan Bluetooth
             stop_ble_scan()
             st.rerun()
     else:
+
         if st.button("Iniciar ble-scan", key="start_ble-scan"):
-            result = start_ble_scan(selected_interface)
+            result = start_ble_scan()
             st.success(result)
             st.rerun()
 

@@ -73,7 +73,7 @@ cd ../../
 rm -rf bully
 
 # Install Wifite3
-#git clone https://github.com/4k4xs4pH1r3/wifite3
+git clone https://github.com/4k4xs4pH1r3/wifite3
 
 # Reload systemd daemon and enable/start the evilpig service
 systemctl daemon-reload
