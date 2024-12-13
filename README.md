@@ -57,9 +57,9 @@ C --> D
 A --> E(WPA Hndshk cptrng)
 E --> D
 A --> H(Bluetooth Scan)
+H --> I{Dispositivos BLE Próximos}
 H --> F(BLE Ping Flood)
 H --> G(BLE BlueDucky Exploit)
-H --> I{Dispositivos BLE Próximos}
 F --> J(Dispositivo BLE Alvo)
 G --> J
 ```
