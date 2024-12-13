@@ -57,7 +57,7 @@ C --> D
 A --> E(WPA Hndshk cptrng)
 E --> D
 A --> H(Bluetooth Scan)
-H --> I{Dispositivos BLE Próximos}
+H --> I{BLE por perto}
 H --> F(BLE Ping Flood)
 H --> G(BLE BlueDucky Exploit)
 F --> J(Dispositivo BLE Alvo)
@@ -78,10 +78,10 @@ G --> J
 
 # Instalação
 ```bash
-cd  /opt
-sudo  git  clone  https://github.com/Pasch0/EvilPiG
-cd  EvilPiG
-sudo  python3  setup.py
+cd /opt
+sudo git clone https://github.com/Pasch0/EvilPiG
+cd EvilPiG
+sudo python3 setup.py
 ```
 
 # Tecnologias Utilizadas
@@ -136,8 +136,8 @@ Before starting, you will need to have installed on your machine:
 ## Installation
 
 ```bash
-cd  /opt
-sudo  git  clone  https://github.com/Pasch0/EvilPiG
-cd  EvilPiG
-sudo  python3  setup.py
+cd /opt
+sudo git clone https://github.com/Pasch0/EvilPiG
+cd EvilPiG
+sudo python3 setup.py
 ```
